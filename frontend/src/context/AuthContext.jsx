@@ -22,7 +22,13 @@ export const AuthProvider = ({ children }) => {
   const fetchUserProfile = async () => {
     try {
       const res = await api.get('/users/me');
-      setUser(res.data);
+      const userData = res.data;
+      // Normalize: ensure both .id and ._id are available
+      // Login returns { id }, profile returns { _id }
+      if (userData._id && !userData.id) {
+        userData.id = userData._id;
+      }
+      setUser(userData);
     } catch (error) {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');

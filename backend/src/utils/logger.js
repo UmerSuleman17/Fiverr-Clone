@@ -1,45 +1,56 @@
-const winston = require('winston');
 const path = require('path');
 
-const logDir = 'logs';
+let logger;
 
-const logger = winston.createLogger({
-  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
-  format: winston.format.combine(
-    winston.format.timestamp({
-      format: 'YYYY-MM-DD HH:mm:ss'
-    }),
-    winston.format.errors({ stack: true }),
-    winston.format.splat(),
-    winston.format.json()
-  ),
-  defaultMeta: { service: 'fiverr-backend' },
-  transports: [
-    // Write all logs with level 'error' and below to error.log
-    new winston.transports.File({ 
-      filename: path.join(logDir, 'error.log'), 
-      level: 'error' 
-    }),
-    // Write all logs with level 'info' and below to combined.log
-    new winston.transports.File({ 
-      filename: path.join(logDir, 'combined.log') 
-    }),
-  ],
-});
+try {
+  const winston = require('winston');
+  const logDir = 'logs';
 
-// If not in production, also log to console with colors
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
+  logger = winston.createLogger({
+    level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
     format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.simple()
+      winston.format.timestamp({
+        format: 'YYYY-MM-DD HH:mm:ss'
+      }),
+      winston.format.errors({ stack: true }),
+      winston.format.splat(),
+      winston.format.json()
     ),
-  }));
-}
+    defaultMeta: { service: 'fiverr-backend' },
+    transports: [
+      new winston.transports.File({ 
+        filename: path.join(logDir, 'error.log'), 
+        level: 'error' 
+      }),
+      new winston.transports.File({ 
+        filename: path.join(logDir, 'combined.log') 
+      }),
+    ],
+  });
 
-// Create a stream for morgan
-logger.stream = {
-  write: (message) => logger.info(message.trim()),
-};
+  if (process.env.NODE_ENV !== 'production') {
+    logger.add(new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      ),
+    }));
+  }
+
+  logger.stream = {
+    write: (message) => logger.info(message.trim()),
+  };
+} catch (err) {
+  // Fallback logger if winston is not installed
+  logger = {
+    info: (...args) => console.log('[INFO]', ...args),
+    error: (...args) => console.error('[ERROR]', ...args),
+    warn: (...args) => console.warn('[WARN]', ...args),
+    debug: (...args) => console.log('[DEBUG]', ...args),
+    stream: {
+      write: (message) => console.log('[HTTP]', message.trim()),
+    },
+  };
+}
 
 module.exports = logger;

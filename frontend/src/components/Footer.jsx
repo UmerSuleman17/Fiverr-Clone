@@ -39,13 +39,13 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-3">Follow Us</h4>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 text-2xl">
+              <a href="https://github.com/UmerSuleman17" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 text-2xl">
                 <FaGithub />
               </a>
               <a href="#" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 text-2xl">
                 <FaTwitter />
               </a>
-              <a href="#" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 text-2xl">
+              <a href="https://www.linkedin.com/in/umer-suleman-862175329?utm_source=share_via&utm_content=profile&utm_medium=member_ios" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 text-2xl">
                 <FaLinkedin />
               </a>
             </div>

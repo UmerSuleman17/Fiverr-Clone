@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/api';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import Review from '../components/Review';
 import toast from 'react-hot-toast';
 
@@ -40,7 +40,7 @@ const GigDetail = () => {
       // Redirect to Stripe Checkout
       const { sessionId } = res.data;
       if (sessionId) {
-        const stripe = window.Stripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+        const stripe = window.Stripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
         await stripe.redirectToCheckout({ sessionId });
       } else {
         // If using PaymentIntent

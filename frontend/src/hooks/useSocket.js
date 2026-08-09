@@ -9,7 +9,7 @@ const useSocket = () => {
     const token = localStorage.getItem('accessToken');
     if (!token) return;
 
-    const newSocket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
+    const newSocket = io(import.meta.env.VITE_SOCKET_URL || '', {
       auth: { token },
       transports: ['websocket'],
     });
@@ -24,7 +24,7 @@ const useSocket = () => {
     };
   }, []);
 
-  return socketRef.current;
+  return socket;
 };
 
 export default useSocket;

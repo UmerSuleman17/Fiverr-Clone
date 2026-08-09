@@ -1,18 +1,29 @@
 const multer = require('multer');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const multerStorageCloudinary = require('multer-storage-cloudinary');
+const CloudinaryStorage = multerStorageCloudinary.CloudinaryStorage || multerStorageCloudinary;
 const cloudinary = require('../services/cloudinary');
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'fiverr-clone',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
-    transformation: [
-      { width: 800, height: 600, crop: 'limit' },
-      { quality: 'auto:good' }
-    ],
-  },
-});
+let storage;
+if (process.env.CLOUDINARY_CLOUD_NAME) {
+  try {
+    storage = new CloudinaryStorage({
+      cloudinary: cloudinary,
+      params: {
+        folder: 'fiverr-clone',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+        transformation: [
+          { width: 800, height: 600, crop: 'limit' },
+          { quality: 'auto:good' }
+        ],
+      },
+    });
+  } catch (err) {
+    console.warn('Cloudinary storage setup failed, falling back to memory storage:', err.message);
+    storage = multer.memoryStorage();
+  }
+} else {
+  storage = multer.memoryStorage();
+}
 
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png|webp|gif/;
@@ -34,14 +45,8 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
-// Single file upload (avatar)
-const uploadSingle = upload.single('avatar');
+upload.uploadSingle = upload.single('avatar');
+upload.uploadMultiple = upload.array('images', 5);
+upload.upload = upload;
 
-// Multiple files upload (gig images)
-const uploadMultiple = upload.array('images', 5);
-
-module.exports = {
-  upload,
-  uploadSingle,
-  uploadMultiple,
-};
+module.exports = upload;

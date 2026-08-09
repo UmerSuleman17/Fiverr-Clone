@@ -23,7 +23,7 @@ exports.sendMessage = async (req, res) => {
     // Emit via socket if needed (we can get io from app)
     const io = req.app.get('io');
     if (io) {
-      io.to(conversationId).emit('message', message);
+      io.to(`conv:${conversationId}`).emit('newMessage', message);
     }
 
     res.status(201).json(message);

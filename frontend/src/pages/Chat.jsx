@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import api from '../api/api';
 import useSocket from '../hooks/useSocket';
 import toast from 'react-hot-toast';
@@ -61,13 +61,21 @@ const Chat = () => {
   useEffect(() => {
     if (selectedConv) {
       fetchMessages(selectedConv._id);
+      if (socket) {
+        socket.emit('joinConversation', selectedConv._id);
+      }
+      return () => {
+        if (socket) {
+          socket.emit('leaveConversation', selectedConv._id);
+        }
+      };
     }
-  }, [selectedConv]);
+  }, [selectedConv, socket]);
 
   // Socket listeners
   useEffect(() => {
     if (!socket) return;
-    socket.on('message', (msg) => {
+    socket.on('newMessage', (msg) => {
       if (selectedConv && msg.conversation === selectedConv._id) {
         setMessages(prev => [...prev, msg]);
       }
@@ -81,7 +89,7 @@ const Chat = () => {
       // Update read status if needed
     });
     return () => {
-      socket.off('message');
+      socket.off('newMessage');
       socket.off('typing');
       socket.off('messageRead');
     };
@@ -96,7 +104,7 @@ const Chat = () => {
     e.preventDefault();
     if (!newMessage.trim() || !selectedConv) return;
     const text = newMessage.trim();
-    socket.emit('message', { conversationId: selectedConv._id, text });
+    socket.emit('sendMessage', { conversationId: selectedConv._id, text });
     setNewMessage('');
     // Optimistically add message (will be confirmed by server)
     // We'll rely on server echo

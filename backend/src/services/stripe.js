@@ -2,7 +2,8 @@ const Stripe = require('stripe');
 const { STRIPE_SECRET_KEY } = require('../config');
 const logger = require('../utils/logger');
 
-const stripe = new Stripe(STRIPE_SECRET_KEY, {
+const stripeKey = STRIPE_SECRET_KEY || 'sk_test_dummy_key_for_dev';
+const stripe = new Stripe(stripeKey, {
   apiVersion: '2023-10-16',
 });
 
@@ -68,10 +69,10 @@ const createTransfer = async (amount, currency, destination, metadata) => {
   }
 };
 
-module.exports = {
-  stripe,
-  createPaymentIntent,
-  createCheckoutSession,
-  verifyWebhookSignature,
-  createTransfer,
-};
+stripe.createPaymentIntent = createPaymentIntent;
+stripe.createCheckoutSession = createCheckoutSession;
+stripe.verifyWebhookSignature = verifyWebhookSignature;
+stripe.createTransfer = createTransfer;
+stripe.stripe = stripe;
+
+module.exports = stripe;

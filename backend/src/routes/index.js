@@ -12,8 +12,6 @@ const wishlistRoutes = require('./wishlistRoutes');
 const adminRoutes = require('./adminRoutes');
 const notificationRoutes = require('./notificationRoutes');
 const stripeRoutes = require('./stripeRoutes');
-const webhookRoutes = require('./webhookRoutes');
-
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
 router.use('/gigs', gigRoutes);
@@ -25,6 +23,5 @@ router.use('/wishlist', wishlistRoutes);
 router.use('/admin', adminRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/stripe', stripeRoutes);
-router.use('/webhooks', webhookRoutes);
 
 module.exports = router;

@@ -1,14 +1,14 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
-import Navbar from './components/common/Navbar';
-import Footer from './components/common/Footer';
-import ProtectedRoute from './components/common/ProtectedRoute';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import ProtectedRoute from './components/common/ProtectedRoutes';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import GigDetail from './pages/GigDetail';
-import CreateGig from './pages/CreateGig';
+import CreateGig from './pages/CreatedGig';
 import EditGig from './pages/EditGig';
 import Orders from './pages/Orders';
 import Dashboard from './pages/Dashboard';
@@ -36,12 +36,12 @@ function App() {
           
           {/* Protected Routes */}
           <Route path="/create-gig" element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={['seller']}>
               <CreateGig />
             </ProtectedRoute>
           } />
           <Route path="/edit-gig/:id" element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={['seller']}>
               <EditGig />
             </ProtectedRoute>
           } />

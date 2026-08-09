@@ -79,9 +79,10 @@ const welcomeEmail = (user) => {
   `;
 };
 
-module.exports = {
-  sendEmail,
-  orderConfirmationEmail,
-  orderDeliveredEmail,
-  welcomeEmail,
-};
+// Attach template helpers directly to sendEmail function
+sendEmail.sendEmail = sendEmail;
+sendEmail.orderConfirmationEmail = orderConfirmationEmail;
+sendEmail.orderDeliveredEmail = orderDeliveredEmail;
+sendEmail.welcomeEmail = welcomeEmail;
+
+module.exports = sendEmail;

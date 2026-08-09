@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const { NODE_ENV } = require('./config');
 const routes = require('./routes');
+const webhookRoutes = require('./routes/webhookRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const logger = require('./utils/logger');
 
@@ -12,6 +13,7 @@ const app = express();
 // Middleware
 app.use(helmet());
 app.use(cors({ origin: process.env.FRONTEND_URL || '*' }));
+app.use('/api/webhooks', webhookRoutes);
 app.use(express.json());
 app.use(morgan('combined', { stream: { write: msg => logger.info(msg.trim()) } }));
 

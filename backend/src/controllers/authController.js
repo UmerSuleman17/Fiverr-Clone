@@ -2,8 +2,15 @@ const jwt = require('jsonwebtoken');
 const { JWT_SECRET, REFRESH_TOKEN_SECRET, JWT_EXPIRES_IN } = require('../config');
 const User = require('../models/User');
 const Session = require('../models/Session');
-const { OAuth2Client } = require('google-auth-library');
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+// Google OAuth - optional dependency
+let OAuth2Client, client;
+try {
+  ({ OAuth2Client } = require('google-auth-library'));
+  client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+} catch (err) {
+  console.warn('google-auth-library not installed. Google OAuth will be unavailable.');
+}
 
 // Helper: generate tokens
 const generateTokens = (user) => {
@@ -47,6 +54,9 @@ exports.login = async (req, res) => {
 
 // Google OAuth
 exports.googleAuth = async (req, res) => {
+  if (!client) {
+    return res.status(501).json({ message: 'Google OAuth is not configured on this server' });
+  }
   const { token } = req.body;
   try {
     const ticket = await client.verifyIdToken({ idToken: token, audience: process.env.GOOGLE_CLIENT_ID });
